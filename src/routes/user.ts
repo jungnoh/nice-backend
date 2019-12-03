@@ -19,6 +19,6 @@ const router = Router();
 router.post('/login', [
   check('username').exists(),
   check('password').exists()
-], UserController.login);
+], UserController.login)
 
-export default router;
+export default router
