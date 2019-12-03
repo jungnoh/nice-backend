@@ -30,8 +30,15 @@
   "devDependencies": {
     "@types/swagger-jsdoc": "^3.0.2",
     "@types/swagger-ui-express": "^4.1.0",
+    "husky": "^3.1.0",
     "swagger-jsdoc": "^3.4.0",
     "swagger-ui-express": "^4.1.2",
     "ts-node-dev": "^1.0.0-pre.44"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "npm run lint",
+      "pre-push": "npm run lint"
+    }
   }
 }
