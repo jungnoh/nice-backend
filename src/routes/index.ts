@@ -4,7 +4,7 @@ const router = Router();
 
 router.get('/', (_, res) => {
   res.status(200);
-  res.send('Hello world!!')
+  res.send('Hello world!!');
 });
 
-export default router
+export default router;

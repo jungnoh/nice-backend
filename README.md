@@ -6,9 +6,8 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
 - DB usage with TypeORM (configured for MySQL, can be changed)
 - Basic passport.js implementation (`passport-local`)
 - HTTPS support
-- TSLint
+- TSLint with pre-commit hooks
 - Swagger, TSDoc documentations
-- 
 
 # 처음 시작하기
 1. DB 접속정보 추가

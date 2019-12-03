@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --watch ./src www.dev.ts",
     "prod": "ts-node www.prod.ts",
-    "lint": "tslint ."
+    "lint": "tslint --project . --fix"
   },
   "author": "",
   "license": "ISC",

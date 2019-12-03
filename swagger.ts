@@ -9,14 +9,14 @@ const swaggerDefinition = {
     title: 'Nice backend', // Title (required)
     version: '1.0.0' // Version (required)
   }
-}
+};
 
 // Options for the swagger docs
 const options = {
   apis: ['./src/routes/*.ts'],
   // Import swaggerDefinitions
   swaggerDefinition,
-}
+};
 
 // Initialize swagger-jsdoc -> returns validated swagger spec in json format
 const swaggerSpec = swaggerJSDoc(options);
