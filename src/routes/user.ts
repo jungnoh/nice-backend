@@ -21,4 +21,4 @@ router.post('/login', [
   check('password').exists()
 ], UserController.login);
 
-export default router
+export default router;
