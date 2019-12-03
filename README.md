@@ -7,9 +7,12 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
 - Basic passport.js implementation (`passport-local`)
 - HTTPS support
 - TSLint
+- Swagger, TSDoc documentations
+- 
 
 # 처음 시작하기
 1. DB 접속정보 추가
+
 `ormconfig.json`에 아래 형태로 DB 접속정보를 저장합니다.
 ```json
 {
@@ -36,8 +39,8 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
 _[이미지 출처](https://www.coreycleary.me/project-structure-for-an-express-rest-api-when-there-is-no-standard-way/)_
 
 1. 라우터 (/routes): HTTP 요청을 받음, 컨트롤러로 넘기기 전 유효성 확인, 권한 확인 수행
-- 잘못된 요청이 들어올 경우 `400` 반환
-- 권한이 없을 경우 `403` 반환
+- 잘못된 요청이 들어올 경우 `400`, 권한이 없을 경우 `403` 반환
+- Swagger 문서는 여기에 작성함
 2. 컨트롤러 (/controllers): HTTP 요청을 처리하는 단계
 - `req`, `res`를 인자로 받아 적절한 결과 반환
 - 서비스를 이용해 요청을 수행하고, JSON 형태로 결과를 보내는 역할
