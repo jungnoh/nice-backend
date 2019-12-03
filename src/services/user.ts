@@ -2,8 +2,6 @@ import {getManager} from 'typeorm';
 import User from '../models/user';
 import * as Password from '../utils/password';
 
-const entityManager = getManager();
-
 /**
  * @description Create a user, without profile info
  * @param email Email address
@@ -16,7 +14,7 @@ export async function createUser(email: string, username: string, password: stri
     user.email = email;
     user.username = username;
     user.password = await Password.hash(password);
-    await entityManager.save(user);
+    await getManager().save(user);
     return user;
   } catch (err) {
     throw err;
@@ -31,7 +29,7 @@ export async function createUser(email: string, username: string, password: stri
  */
 export async function authenticate(username: string, password: string): Promise<User | undefined> {
   try {
-    const user = await entityManager.findOne(User, {username});
+    const user = await getManager().findOne(User, {username});
     if (user === undefined) {
       return undefined;
     } else {
@@ -49,7 +47,7 @@ export async function authenticate(username: string, password: string): Promise<
 
 export async function getByUsername(username: string): Promise<User | undefined> {
   try {
-    return await entityManager.findOne(User, {username});
+    return await getManager().findOne(User, {username});
   } catch (err) {
     throw err;
   }
