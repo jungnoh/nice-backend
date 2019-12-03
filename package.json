@@ -1,0 +1,30 @@
+{
+  "name": "nice-backend",
+  "version": "1.0.0",
+  "description": "A nice backend scaffold",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node-dev --watch ./src www.dev.ts",
+    "prod": "ts-node www.prod.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/argon2": "^0.15.0",
+    "@types/express": "^4.17.2",
+    "@types/passport": "^1.0.2",
+    "@types/passport-local": "^1.0.33",
+    "argon2": "^0.25.1",
+    "express": "^4.17.1",
+    "mysql": "^2.17.1",
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "ts-node": "^8.5.4",
+    "tslint": "^5.20.1",
+    "typeorm": "^0.2.20",
+    "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "ts-node-dev": "^1.0.0-pre.44"
+  }
+}
