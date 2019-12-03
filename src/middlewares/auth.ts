@@ -1,7 +1,7 @@
 import {NextFunction, Request, Response} from 'express';
 
 export function checkLoggedIn(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) {
+  if (!req.currentUser) {
     res.status(403);
     res.end();
   } else {
@@ -10,7 +10,7 @@ export function checkLoggedIn(req: Request, res: Response, next: NextFunction) {
 }
 
 export function checkSuperuser(req: Request, res: Response, next: NextFunction) {
-  if (req) {
+  if (!req.currentUser || !req.currentUser.isSuperuser) {
     res.status(403);
     res.end();
   } else {
