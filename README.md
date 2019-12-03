@@ -49,6 +49,10 @@ _[이미지 출처](https://www.coreycleary.me/project-structure-for-an-express-
 - 서비스는 HTTP `req`, `res`에 접근할 수 없음: 서버와 무관하게 동작해야 함
 - 데이터베이스 접근은 이 단계에서 이루어짐
 
+# 주요 라이브러리
+프로젝트를 시작하기 전 이용방법을 숙지하시길 바립니다.
+- [express-validator](https://express-validator.github.io/docs/): 요청 유효성 확인에 사용
+
 # 관련 문서
 - https://blog.wonhada.com/nginx-sslhttps-node-js/
 - https://dev.to/rxassim/setup-postgresql-with-typeorm-in-graphql-tutorial-1cn8

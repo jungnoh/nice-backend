@@ -1,4 +1,5 @@
 import {Router} from 'express';
+import {check} from 'express-validator';
 import * as UserController from '../controllers/user';
 
 const router = Router();
@@ -15,6 +16,9 @@ const router = Router();
  *       403:
  *         description: Login fail
  */
-router.post('/login', UserController.login);
+router.post('/login', [
+  check('username').exists(),
+  check('password').exists()
+], UserController.login);
 
 export default router;
