@@ -1,19 +1,31 @@
+import { TypeormStore } from 'connect-typeorm/out';
 import express from 'express';
+import expressSession from 'express-session';
+import helmet from 'helmet';
 import passport from 'passport';
 import {createConnection} from 'typeorm';
+import Session from './models/session';
 import router from './routes';
 
-import cookieSession from 'cookie-session';
 import * as PassportStrategy from './utils/passport';
 
 export default async function createApp(isDev: boolean = false) {
-  await createConnection();
+  const dbConn = await createConnection();
   const app = express();
 
-  app.use(cookieSession({
-    keys: ['asdf'], // TODO: Use a secure key
-    maxAge: 1000 * 60 * 60 * 24
+  const sessionRepo = dbConn.getRepository(Session);
+  app.use(expressSession({
+    resave: false,
+    saveUninitialized: false,
+    secret: 'asdf', // TODO: Use a secure key
+    store: new TypeormStore({
+      cleanupLimit: 2,
+      limitSubquery: false,
+      ttl: 86400
+    }).connect(sessionRepo)
   }));
+
+  app.use(helmet());
   // Passport
   app.use(passport.initialize());
   app.use(passport.session());
