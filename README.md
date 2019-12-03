@@ -56,9 +56,9 @@ HTTP 요청을 처리하는 단계
 - 서비스는 HTTP `req`, `res`에 접근할 수 없음: 서버와 무관하게 동작해야 함
 - 데이터베이스 접근은 이 단계에서 이루어짐
 
-## Express 타입
+<!-- ## Express 타입
 Passport.js에 의해 로그인된 후 Express request에 사용자 객체 (`User`)가 포함됩니다.
-Request 타입에 이를 반영하기 위해 `src/express.d.ts`에서 타입 정의를 확장합니다.
+Request 타입에 이를 반영하기 위해 `src/express.d.ts`에서 타입 정의를 확장합니다. -->
 
 
 
