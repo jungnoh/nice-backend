@@ -26,6 +26,9 @@ export default async function createApp(isDev: boolean = false) {
   }));
 
   app.use(helmet());
+  // Parsers
+  app.use(express.json());
+  app.use(express.urlencoded({extended: true}));
   // Passport
   app.use(passport.initialize());
   app.use(passport.session());

@@ -1,5 +1,6 @@
 import {Router} from 'express';
-import {check} from 'express-validator';
+import passport from 'passport';
+// import {check} from 'express-validator';
 import * as UserController from '../controllers/user';
 
 const router = Router();
@@ -16,9 +17,8 @@ const router = Router();
  *       403:
  *         description: Login fail
  */
-router.post('/login', [
-  check('username').exists(),
-  check('password').exists()
-], UserController.login);
+router.post('/login', passport.authenticate('local'), (_, res) => {
+  res.status(200).json({success: true});
+});
 
 export default router;

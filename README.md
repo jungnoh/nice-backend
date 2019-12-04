@@ -22,13 +22,12 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
   "username": "test",
   "password": "test",
   "database": "test",
-  "autoSchemaSync": true,
   "entities": [
     "./src/models/*.ts"
   ]
 }
 ```
-`autoSchemaSync`와 `entities`는 반드시 포함하십시오. 자세한 설정은 [TypeORM docs](https://typeorm.io/#/using-ormconfig)에서 확인하세요.
+`entities`는 반드시 포함하십시오. 자세한 설정은 [TypeORM docs](https://typeorm.io/#/using-ormconfig)에서 확인하세요.
 
 # Notes
 

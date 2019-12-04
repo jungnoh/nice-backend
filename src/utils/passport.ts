@@ -16,11 +16,15 @@ export const localStrategy = new LocalStrategy({
   passwordField: 'password',
   usernameField: 'username'
 }, async (req, username, password, done) => {
-  const user = await UserService.authenticate(username, password);
-  if (user === undefined) {
-    return done(false, null);
-  } else {
-    return done(true, user);
+  try {
+    const user = await UserService.authenticate(username, password);
+    if (user === undefined) {
+      return done(null, false);
+    } else {
+      return done(null, user);
+    }
+  } catch (err) {
+    return done(err);
   }
 });
 

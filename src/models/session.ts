@@ -4,7 +4,7 @@ import { Column, Entity, Index, PrimaryColumn } from 'typeorm';
 @Entity()
 export default class Session implements ISession {
   @Index()
-  @Column()
+  @Column('bigint')
   public expiredAt: number = Date.now();
 
   @PrimaryColumn({ length: 255 })
