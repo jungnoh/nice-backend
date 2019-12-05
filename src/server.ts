@@ -45,14 +45,18 @@ async function setup(isDev: boolean) {
 }
 
 export default async function createApp(isDev: boolean = false) {
-  // Set config dir
+  // Set configs
   await setup(isDev);
-
   const app = express();
+  // Express session
   app.use(expressSession({
+    cookie: {
+      httpOnly: false, // Client-side XHR will be used
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    },
     resave: false,
     saveUninitialized: false,
-    secret: 'asdf',
+    secret: nconf.get('sessionSecret'),
     store: new (MongoStore(expressSession))({
       mongooseConnection: mongoose.connection
     })
