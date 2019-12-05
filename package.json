@@ -7,10 +7,7 @@
     "dev": "ts-node-dev --watch ./src www.dev.ts",
     "prod": "ts-node www.prod.ts",
     "lint": "tslint --project . --fix",
-    "add-superuser": "ts-node addSuperuser.ts",
-    "migrate-gen": "ts-node ./node_modules/.bin/typeorm migration:generate -n Migrate",
-    "migrate-run": "ts-node ./node_modules/.bin/typeorm migration:run",
-    "typeorm:cli": "ts-node ./node_modules/typeorm/cli -f ./src/ormconfig.ts"
+    "add-superuser": "ts-node addSuperuser.ts"
   },
   "author": "",
   "license": "ISC",
