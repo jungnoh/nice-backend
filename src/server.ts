@@ -1,28 +1,61 @@
-import { TypeormStore } from 'connect-typeorm/out';
+import nconf from 'nconf';
+import MongoStore from 'connect-mongo';
 import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
+import mongoose from 'mongoose';
 import passport from 'passport';
-import {createConnection} from 'typeorm';
-import Session from './models/session';
 import router from './routes';
+import {createKey} from './utils/crypto';
 
 import * as PassportStrategy from './utils/passport';
 
-export default async function createApp(isDev: boolean = false) {
-  const dbConn = await createConnection();
-  const app = express();
+interface MongoSettings {
+    url: string;
+    user?: string;
+    pass?: string;
+}
 
-  const sessionRepo = dbConn.getRepository(Session);
+// TODO: Find a better name
+async function setup(isDev: boolean) {
+  const settingsPath = `${__dirname}/../config/config.${isDev ? 'dev' : 'prod'}.json`;
+  nconf.file(settingsPath);
+  try {
+    if (!nconf.get('sessionSecret')) {
+      nconf.set('sessionSecret', await createKey());
+    }
+    if (!nconf.get('mongodb')) {
+      throw new Error('MongoDB connection config is not set');
+    }
+    const mongoConfig = nconf.get('mongodb') as MongoSettings;
+    const mongooseConfig: mongoose.ConnectionOptions = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    };
+    if (mongoConfig.user !== undefined) {
+      mongooseConfig.user = mongoConfig.user;
+      mongooseConfig.pass = mongoConfig.pass;
+    }
+    mongoose.connect(mongoConfig.url, mongooseConfig);
+    // Save config
+    nconf.save(() => null);
+  } catch (err) {
+    throw err;
+  }
+}
+
+export default async function createApp(isDev: boolean = false) {
+  // Set config dir
+  await setup(isDev);
+
+  const app = express();
   app.use(expressSession({
     resave: false,
     saveUninitialized: false,
-    secret: 'asdf', // TODO: Use a secure key
-    store: new TypeormStore({
-      cleanupLimit: 2,
-      limitSubquery: false,
-      ttl: 86400
-    }).connect(sessionRepo)
+    secret: 'asdf',
+    store: new (MongoStore(expressSession))({
+      mongooseConnection: mongoose.connection
+    })
   }));
 
   app.use(helmet());

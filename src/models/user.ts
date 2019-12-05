@@ -1,15 +1,26 @@
-import {Column, Entity, PrimaryGeneratedColumn} from 'typeorm';
+import mongoose from 'mongoose';
 
-@Entity()
-export default class User {
-  @PrimaryGeneratedColumn()
-  public id: number;
-  @Column()
-  public username: string;
-  @Column()
-  public email: string;
-  @Column()
-  public password: string;
-  @Column({default: false})
-  public isSuperuser: boolean;
+export interface User extends mongoose.Document {
+  email: string;
+  isSuperuser: boolean;
+  password: string;
+  username: string;
 }
+
+const schema = new mongoose.Schema({
+  email: {
+    type: String
+  },
+  isSuperuser: {
+    default: false,
+    type: Boolean
+  },
+  password: {
+    type: String
+  },
+  username: {
+    type: String
+  }
+});
+
+export const UserModel = mongoose.model<User>('User', schema);

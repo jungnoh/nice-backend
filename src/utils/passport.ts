@@ -1,5 +1,5 @@
 import {Strategy as LocalStrategy} from 'passport-local';
-import User from '../models/user';
+import {User} from '../models/user';
 import * as UserService from '../services/user';
 
 interface SerializedUser {

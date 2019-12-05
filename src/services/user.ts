@@ -1,5 +1,4 @@
-import {getManager} from 'typeorm';
-import User from '../models/user';
+import {User, UserModel} from '../models/user';
 import * as Password from '../utils/password';
 
 /**
@@ -10,12 +9,11 @@ import * as Password from '../utils/password';
  */
 export async function createUser(email: string, username: string, password: string): Promise<User> {
   try {
-    const user = new User();
-    user.email = email;
-    user.username = username;
-    user.password = await Password.hash(password);
-    await getManager().save(user);
-    return user;
+    return await UserModel.create({
+      email,
+      password: await Password.hash(password),
+      username
+    });
   } catch (err) {
     throw err;
   }
@@ -29,8 +27,8 @@ export async function createUser(email: string, username: string, password: stri
  */
 export async function authenticate(username: string, password: string): Promise<User | undefined> {
   try {
-    const user = await getManager().findOne(User, {username});
-    if (user === undefined) {
+    const user = await UserModel.findOne({username});
+    if (user === null) {
       return undefined;
     } else {
       const valid = await Password.verify(user.password, password);
@@ -47,7 +45,7 @@ export async function authenticate(username: string, password: string): Promise<
 
 export async function getByUsername(username: string): Promise<User | undefined> {
   try {
-    return await getManager().findOne(User, {username});
+    return await UserModel.findOne({username}) ?? undefined;
   } catch (err) {
     throw err;
   }
