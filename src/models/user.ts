@@ -22,8 +22,10 @@ const schema = new mongoose.Schema({
     type: String
   },
   username: {
+    index: true,
     required: true,
-    type: String
+    type: String,
+    unique: true
   }
 });
 
