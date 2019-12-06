@@ -5,7 +5,7 @@ import {AccessType} from '../models/board';
 import * as BoardService from '../services/board';
 
 function checkUserLevel(req: Request, level: AccessType): boolean {
-  switch(level) {
+  switch (level) {
     case AccessType.Superuser:
       return req.currentUser?.isSuperuser ?? false;
     case AccessType.Member:
