@@ -2,9 +2,9 @@ import {ObjectId} from 'bson';
 import mongoose from 'mongoose';
 
 export enum AccessType {
-  Anyone,
-  Member,
-  Superuser
+  Anyone = 'anyone',
+  Member = 'member',
+  Superuser = 'superuser'
 }
 
 export interface Board extends mongoose.TimestampedDocument {

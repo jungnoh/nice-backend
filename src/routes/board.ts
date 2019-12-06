@@ -33,8 +33,7 @@ userRouter.post('/:key/write', [
   check('content').exists()
 ], rejectValFail, BoardController.writePost);
 
-userRouter.get('/:key/:postID', [
-  check('key').exists().matches(boardKeyRegex),
+userRouter.get('/:postID', [
   check('postID').exists().isMongoId()
 ], rejectValFail, BoardController.getPost);
 

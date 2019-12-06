@@ -16,9 +16,6 @@ interface MongoSettings {
     pass?: string;
 }
 
-// This fixes a deprecation: https://github.com/Automattic/mongoose/issues/6890
-mongoose.set('useCreateIndex', true);
-
 // TODO: Find a better name
 async function setup(isDev: boolean) {
   const settingsPath = `${__dirname}/../config/config.${isDev ? 'dev' : 'prod'}.json`;
@@ -32,6 +29,8 @@ async function setup(isDev: boolean) {
     }
     const mongoConfig = nconf.get('mongodb') as MongoSettings;
     const mongooseConfig: mongoose.ConnectionOptions = {
+      useCreateIndex: true,
+      useFindAndModify: true,
       useNewUrlParser: true,
       useUnifiedTopology: true
     };
@@ -75,6 +74,10 @@ export default async function createApp(isDev: boolean = false) {
   passport.use(PassportStrategy.localStrategy);
   passport.serializeUser(PassportStrategy.serialize);
   passport.deserializeUser(PassportStrategy.deserialize);
+  app.use((req, res, next) => {
+    req.currentUser = (req.user as any);
+    next();
+  });
   // Routes
   app.use(router);
 

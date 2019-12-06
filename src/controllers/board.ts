@@ -1,5 +1,4 @@
 import {ObjectId} from 'bson';
-import DOMPurify from 'dompurify';
 import {Request, Response} from 'express';
 import {AccessType} from '../models/board';
 import * as BoardService from '../services/board';
@@ -112,10 +111,11 @@ export async function writePost(req: Request, res: Response) {
       // 404 by design
       res.status(404).json({success: false});
     } else {
-      const cleanContent = DOMPurify.sanitize(req.body.content);
+      // TODO: Sanitize to prevent XSS
+      const cleanContent = req.body.content;
       const newPost = await BoardService.createPost(
         req.currentUser._id,
-        req.params.board,
+        req.params.key,
         cleanContent,
         req.body.title
       );
@@ -135,24 +135,24 @@ export async function writePost(req: Request, res: Response) {
 }
 
 /**
- * @description Controller for `GET /:key/:postID`
+ * @description Controller for `GET /:postID`
  */
 export async function getPost(req: Request, res: Response) {
   try {
-    const perm = await BoardService.getBoardPermissions(req.params.key);
+    const post = await BoardService.getPostById(new ObjectId(req.params.postID));
+    if (!post) {
+      res.status(404).json({success: false});
+      return;
+    }
+    const perm = await BoardService.getBoardPermissionsById(post.board);
     const hasPerm = checkUserLevel(req, perm.read);
     if (!hasPerm) {
       res.status(404).json({success: false});
     } else {
-      const post = await BoardService.getPostById(new ObjectId(req.params.id));
-      if (!post) {
-        res.status(404).json({success: false});
-      } else {
-        res.status(200).json({
-          post,
-          success: true
-        });
-      }
+      res.status(200).json({
+        post,
+        success: true
+      });
     }
   } catch (err) {
     if (err === BoardService.BOARD_NEXIST) {

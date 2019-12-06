@@ -109,6 +109,18 @@ export async function getBoardPermissions(key: string) {
   }
 }
 
+export async function getBoardPermissionsById(id: ObjectId) {
+  try {
+    const board = await BoardModel.findById(id).select('permissions');
+    if (board === null) {
+      throw BOARD_NEXIST;
+    }
+    return board.permissions;
+  } catch (err) {
+    throw err;
+  }
+}
+
 /**
  * @description Create a new post
  * @param author Reference ObjectId of author
@@ -117,18 +129,24 @@ export async function getBoardPermissions(key: string) {
  * @param title Title html string
  * @throws `BOARD_NEXIST`
  */
-export async function createPost(author: ObjectId, board: string, content: string, title: string) {
+export async function createPost(author: ObjectId, board: string, content: string, title: string): Promise<Post> {
   try {
     const boardObj = await BoardModel.findOne({key: board}).select('_id');
     if (!boardObj) {
       throw BOARD_NEXIST;
     }
-    return await new PostModel({
+    const newPost = await new PostModel({
       author,
       board: boardObj._id,
       content,
       title
     }).save();
+    await BoardModel.findOneAndUpdate({key: board}, {
+      $push: {
+        posts: newPost._id
+      }
+    });
+    return newPost;
   } catch (err) {
     throw err;
   }
