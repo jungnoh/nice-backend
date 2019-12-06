@@ -2,7 +2,6 @@ import {ObjectId} from 'bson';
 
 import {Board, BoardModel} from '../models/board';
 import {Post, PostModel} from '../models/post';
-import {User, UserModel} from '../models/user';
 
 // Common error literals
 export const NAME_EXISTS = 'ENAME_EXISTS';
@@ -12,11 +11,12 @@ export const POST_NEXIST = 'EPOST_NO_EXIST';
 
 // Hard-coded literals
 const INVALID_BOARD_KEYS = ['admin'];
+export const BOARD_KEY_REGEX = /^[0-9a-zA-Z\-]+$/;
 
 /**
  * @description Create a new board.
  * @param key Key of board. This will be used as an route parameter,
- * and should match the regex `^[0-9a-zA-Z\-]+$`.
+ * and should match the regex `BOARD_KEY_REGEX`.
  * @param visibleName Visible name. This will be shown to the end user.
  * @throws `NAME_EXISTS`, `NAME_INVALID`
  * @returns Created board object
@@ -25,7 +25,7 @@ export async function createBoard(key: string, visibleName: string): Promise<Boa
   try {
     key = key.toLowerCase().trim();
     // Reject invalid keys
-    if (!(/^[0-9a-zA-Z]+$/.test(key)) || (key in INVALID_BOARD_KEYS)) {
+    if (!(BOARD_KEY_REGEX.test(key)) || (key in INVALID_BOARD_KEYS)) {
       throw NAME_INVALID;
     }
     // Check for duplicates
@@ -49,7 +49,8 @@ export async function createBoard(key: string, visibleName: string): Promise<Boa
  */
 export async function renameBoard(key: string, newVisibleName: string): Promise<Board> {
   try {
-    const board = await BoardModel.findOne({key});
+    const board = await BoardModel.findOne({key})
+      .select('-posts');
     if (board === null) {
       throw BOARD_NEXIST;
     }
@@ -111,15 +112,20 @@ export async function getBoardPermissions(key: string) {
 /**
  * @description Create a new post
  * @param author Reference ObjectId of author
- * @param board Reference ObjectId of board
+ * @param board Key of board
  * @param content Content html string
  * @param title Title html string
+ * @throws `BOARD_NEXIST`
  */
-export async function createPost(author: ObjectId, board: ObjectId, content: string, title: string) {
+export async function createPost(author: ObjectId, board: string, content: string, title: string) {
   try {
+    const boardObj = await BoardModel.findOne({key: board}).select('_id');
+    if (!boardObj) {
+      throw BOARD_NEXIST;
+    }
     return await new PostModel({
       author,
-      board,
+      board: boardObj._id,
       content,
       title
     }).save();
@@ -178,12 +184,25 @@ export async function deletePost(id: ObjectId): Promise<void> {
  * @param page Offset page
  * @param postPerPage Maximum number of posts to include
  */
-export async function getPost(query: Partial<Post>, page: number = 1, postPerPage: number = 20) {
+export async function getPosts(query: Partial<Post>, page: number = 1, postPerPage: number = 20) {
   try {
     return await PostModel.find(query)
       .sort({createdAt: -1})
       .skip(postPerPage * (page - 1))
       .limit(postPerPage);
+  } catch (err) {
+    throw err;
+  }
+}
+
+/**
+ * @description Retrieve post by ObjectId.
+ * @param id ObjectId of post
+ * @returns `undefined` if post does not exist, Post object otherwise
+ */
+export async function getPostById(id: ObjectId): Promise<Post | undefined> {
+  try {
+    return await PostModel.findById(id) ?? undefined;
   } catch (err) {
     throw err;
   }

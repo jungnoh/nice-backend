@@ -16,6 +16,9 @@ interface MongoSettings {
     pass?: string;
 }
 
+// This fixes a deprecation: https://github.com/Automattic/mongoose/issues/6890
+mongoose.set('useCreateIndex', true);
+
 // TODO: Find a better name
 async function setup(isDev: boolean) {
   const settingsPath = `${__dirname}/../config/config.${isDev ? 'dev' : 'prod'}.json`;
