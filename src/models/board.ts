@@ -11,8 +11,8 @@ const schema = new mongoose.Schema({
     type: String
   },
   posts: [{
-    type: String,
-    ref: 'Post'
+    ref: 'Post',
+    type: String
   }]
 }, {timestamps: true});
 

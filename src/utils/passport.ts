@@ -48,7 +48,9 @@ export const serialize = (user: User, done: any) => {
  * @param done Callback function
  */
 export const deserialize = (user: SerializedUser, done: any) => {
-  UserService.getByUsername(user.username).then((userObj) => {
+  UserService.findOne({
+    username: user.username
+  }).then((userObj) => {
     if (userObj === undefined) {
       done('Cannot find user', undefined);
     } else {
