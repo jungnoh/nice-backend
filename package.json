@@ -7,6 +7,7 @@
     "dev": "ts-node-dev --watch ./src www.dev.ts",
     "prod": "ts-node www.prod.ts",
     "lint": "tslint --project . --fix",
+    "docs:ts": "typedoc --out docs src",
     "add-superuser": "ts-node addSuperuser.ts"
   },
   "author": "",
@@ -45,7 +46,8 @@
     "husky": "^3.1.0",
     "swagger-jsdoc": "^3.4.0",
     "swagger-ui-express": "^4.1.2",
-    "ts-node-dev": "^1.0.0-pre.44"
+    "ts-node-dev": "^1.0.0-pre.44",
+    "typedoc": "^0.15.3"
   },
   "husky": {
     "hooks": {
