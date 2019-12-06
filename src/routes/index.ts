@@ -1,5 +1,6 @@
 import {Router} from 'express';
 
+import BoardRouter from './board';
 import UserRouter from './user';
 
 const router = Router();
@@ -10,5 +11,6 @@ router.get('/', (_, res) => {
 });
 
 router.use('/user', UserRouter);
+router.use('/board', BoardRouter);
 
 export default router;
