@@ -9,16 +9,20 @@ export interface User extends mongoose.Document {
 
 const schema = new mongoose.Schema({
   email: {
+    required: true,
     type: String
   },
   isSuperuser: {
     default: false,
+    required: true,
     type: Boolean
   },
   password: {
+    required: true,
     type: String
   },
   username: {
+    required: true,
     type: String
   }
 });

@@ -8,7 +8,9 @@ export interface Board extends mongoose.TimestampedDocument {
 
 const schema = new mongoose.Schema({
   name: {
-    type: String
+    required: true,
+    type: String,
+    unique: true
   },
   posts: [{
     ref: 'Post',
