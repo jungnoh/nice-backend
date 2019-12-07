@@ -6,7 +6,10 @@
   "scripts": {
     "dev": "ts-node-dev --watch ./src www.dev.ts",
     "prod": "ts-node www.prod.ts",
-    "lint": "tslint --project . --fix",
+    "lint": "tslint --project .",
+    "lint:fix": "tslint --project . --fix",
+    "test": "jest --forceExit",
+    "test:debug-promise": "jest --detectOpenHandles",
     "docs:ts": "typedoc --out docs src",
     "add-superuser": "ts-node addSuperuser.ts"
   },
@@ -41,11 +44,16 @@
     "typescript": "^3.7.2"
   },
   "devDependencies": {
+    "@types/jest": "^24.0.23",
+    "@types/supertest": "^2.0.8",
     "@types/swagger-jsdoc": "^3.0.2",
     "@types/swagger-ui-express": "^4.1.0",
     "husky": "^3.1.0",
+    "jest": "^24.9.0",
+    "supertest": "^4.0.2",
     "swagger-jsdoc": "^3.4.0",
     "swagger-ui-express": "^4.1.2",
+    "ts-jest": "^24.2.0",
     "ts-node-dev": "^1.0.0-pre.44",
     "typedoc": "^0.15.3"
   },
@@ -54,5 +62,14 @@
       "pre-commit": "npm run lint",
       "pre-push": "npm run lint"
     }
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/",
+      "/docs/",
+      "/config/"
+    ]
   }
 }
