@@ -1,4 +1,4 @@
-# nice-backend (mongodb edition)
+# nice-backend
 
 Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 모두 담은 프로젝트 뼈대입니다.
 
@@ -59,7 +59,7 @@ Request 타입에 이를 반영하기 위해 `src/express.d.ts`에서 타입 정
 
 # 주요 라이브러리
 프로젝트를 시작하기 전 이용방법을 숙지하시길 바립니다.
-- [TypeORM](https://typeorm.io/#/) ⭐️
+- [Mongoose](https://mongoosejs.com/) ⭐️
 - [PassportJS](http://www.passportjs.org/) ⭐️
 - [express-validator](https://express-validator.github.io/docs/): 요청 유효성 확인에 사용
 
