@@ -2,12 +2,6 @@ import {Strategy as LocalStrategy} from 'passport-local';
 import {User} from '../models/user';
 import * as UserService from '../services/user';
 
-interface SerializedUser {
-  email: string;
-  isSuperuser: boolean;
-  username: string;
-}
-
 /**
  * @description Local authentication strategy
  */
@@ -34,12 +28,7 @@ export const localStrategy = new LocalStrategy({
  * @param done Callback function
  */
 export const serialize = (user: User, done: any) => {
-  const serialized: SerializedUser = {
-    email: user.email,
-    isSuperuser: user.isSuperuser,
-    username: user.username
-  };
-  done(null, serialized);
+  done(null, user._id);
 };
 
 /**
@@ -47,10 +36,8 @@ export const serialize = (user: User, done: any) => {
  * @param user `SerializedUser` seralized user
  * @param done Callback function
  */
-export const deserialize = (user: SerializedUser, done: any) => {
-  UserService.findOne({
-    username: user.username
-  }).then((userObj) => {
+export const deserialize = (user: string, done: any) => {
+  UserService.findOne({_id: user}).then((userObj) => {
     if (userObj === undefined) {
       done('Cannot find user', undefined);
     } else {

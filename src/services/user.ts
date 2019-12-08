@@ -1,5 +1,5 @@
 import {ObjectId} from 'bson';
-import {User, UserModel} from '../models/user';
+import {User, UserModel, UserProfile} from '../models/user';
 import * as Password from '../utils/password';
 
 // Common error literals
@@ -99,4 +99,18 @@ export async function update(id: ObjectId, data: Partial<User>): Promise<User | 
   } catch (err) {
     throw err;
   }
+}
+
+/**
+ * @description Convert('sanitize') a User object to a UserProfile,
+ * removing sensitive information contained in a User object. (eg. password hashes)
+ * @param user User object to convert
+ */
+export function sanitizeUserObj(user: User): UserProfile {
+  // Note: do NOT use Object.assign
+  return {
+    email: user.email,
+    isSuperuser: user.isSuperuser,
+    username: user.username
+  };
 }
