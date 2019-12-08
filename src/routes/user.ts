@@ -18,9 +18,14 @@ router.get('/logout', (req, res) => {
 
 router.get('/me', (req, res) => {
   if (!req.currentUser) {
-    res.status(200).json({me: {}, success: true});
+    res.status(200).json({
+      loggedIn: false,
+      me: {},
+      success: true
+    });
   } else {
     res.status(200).json({
+      loggedIn: true,
       me: sanitizeUserObj(req.currentUser),
       success: true
     });
