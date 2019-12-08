@@ -1,35 +1,34 @@
 import {Router} from 'express';
+import {check} from 'express-validator';
 import passport from 'passport';
-import {sanitizeUserObj} from '../services/user';
+import * as UserController from '../controllers/user';
+import {checkLoggedOut, checkSuperuser} from '../middlewares/auth';
 
 const router = Router();
+const userRouter = Router();
+const adminRouter = Router();
+adminRouter.use(checkSuperuser);
 
-router.post('/login',
+userRouter.post('/signup', [
+  check('username').exists(),
+  check('password').exists(),
+  check('email').exists().isEmail()
+], checkLoggedOut, UserController.signup);
+
+userRouter.post('/login',
   passport.authenticate('local', {failWithError: true}),
   (_, res) => {
     res.status(200).json({success: true});
   }
 );
 
-router.get('/logout', (req, res) => {
+userRouter.get('/logout', (req, res) => {
   req.logout();
   res.status(200).json({success: true});
 });
 
-router.get('/me', (req, res) => {
-  if (!req.currentUser) {
-    res.status(200).json({
-      loggedIn: false,
-      me: {},
-      success: true
-    });
-  } else {
-    res.status(200).json({
-      loggedIn: true,
-      me: sanitizeUserObj(req.currentUser),
-      success: true
-    });
-  }
-});
+userRouter.get('/me', UserController.me);
 
+router.use('/admin', adminRouter);
+router.use(userRouter);
 export default router;
