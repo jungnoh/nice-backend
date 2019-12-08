@@ -1,6 +1,6 @@
 import {Express} from 'express';
 import request from 'supertest';
-import createApp from '../src/server';
+import createApp from '../../src/server';
 
 let app: Express;
 
