@@ -7,8 +7,8 @@
     "dev": "ts-node-dev --watch ./src www.dev.ts",
     "prod": "ts-node www.prod.ts",
     "lint": "tslint --project .",
-    "lint:fix": "tslint --project . --fix",
-    "test": "jest --forceExit",
+    "lint:fix": "tslint --project . --fix --runInBand",
+    "test": "jest --forceExit --runInBand",
     "test:debug-promise": "jest --detectOpenHandles",
     "docs:ts": "typedoc --out docs src",
     "add-superuser": "ts-node addSuperuser.ts"
