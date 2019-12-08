@@ -8,6 +8,7 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
 - HTTPS support
 - TSLint with pre-commit hooks
 - Swagger, TSDoc documentations
+- Minimal E2E testing with jest
 - (todo) GraphQL querying
 
 # 처음 시작하기
