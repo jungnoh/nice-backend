@@ -3,6 +3,7 @@ import {check} from 'express-validator';
 import passport from 'passport';
 import * as UserController from '../controllers/user';
 import {checkLoggedOut, checkSuperuser} from '../middlewares/auth';
+import { rejectValFail } from '../middlewares/validate';
 
 const router = Router();
 const userRouter = Router();
@@ -13,7 +14,7 @@ userRouter.post('/signup', [
   check('username').exists(),
   check('password').exists(),
   check('email').exists().isEmail()
-], checkLoggedOut, UserController.signup);
+], rejectValFail, checkLoggedOut, UserController.signup);
 
 userRouter.post('/login',
   passport.authenticate('local', {failWithError: true}),
