@@ -11,12 +11,50 @@ const adminID = 'test_' + crypto.randomBytes(8).toString('hex');
 
 beforeAll(async () => {
   app = await createApp(true);
-  // Create test users
-  await UserService.createUser(`${memberID}@test.com`, memberID, 'asdf', false);
+  // Create test admin
   await UserService.createUser(`${adminID}@test.com`, adminID, 'asdf', true);
 });
 
 describe('Authorization', () => {
+  describe('Sign up', () => {
+    it('should 400 on missing input', async () => {
+      const resp = await request(app).post('/user/signup').send({
+        email: 'asdf@asdf.com',
+        username: 'foo'
+      });
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toBe(false);
+      expect(resp.body).toHaveProperty('reason');
+    });
+    it('should 400 on invalid email', async () => {
+      const resp = await request(app).post('/user/signup').send({
+        email: 'asdf',
+        password: 'bar',
+        username: 'foo'
+      });
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toBe(false);
+      expect(resp.body).toHaveProperty('reason');
+    });
+    it('should properly sign up', async () => {
+      const resp = await request(app).post('/user/signup').send({
+        email: `${memberID}@test.com`,
+        password: 'asdf',
+        username: memberID
+      });
+      expect(resp.status).toEqual(200);
+      expect(resp.body.success).toBe(true);
+    });
+    it('should 409 if email or username exists', async () => {
+      const resp = await request(app).post('/user/signup').send({
+        email: `${memberID}@test.com`,
+        password: 'asdf',
+        username: memberID
+      });
+      expect(resp.status).toEqual(409);
+      expect(resp.body.success).toBe(false);
+    });
+  });
   describe('GET /user/me', () => {
     it('should respond nicely when not logged in', async () => {
       const resp = await request(app).get('/user/me');
