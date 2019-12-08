@@ -5,9 +5,9 @@ import helmet from 'helmet';
 import mongoose from 'mongoose';
 import nconf from 'nconf';
 import passport from 'passport';
+import {handleError} from './middlewares/error';
 import router from './routes';
 import {createKey} from './utils/crypto';
-
 import * as PassportStrategy from './utils/passport';
 
 interface MongoSettings {
@@ -80,6 +80,11 @@ export default async function createApp(isDev: boolean = false) {
   });
   // Routes
   app.use(router);
-
+  // Error handling
+  app.use(handleError);
+  app.all('*', (_, res) => {
+    res.status(404).json({success: false});
+  });
+  // All set!
   return app;
 }

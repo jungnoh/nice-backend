@@ -4,9 +4,12 @@ import {sanitizeUserObj} from '../services/user';
 
 const router = Router();
 
-router.post('/login', passport.authenticate('local'), (_, res) => {
-  res.status(200).json({success: true});
-});
+router.post('/login',
+  passport.authenticate('local', {failWithError: true}),
+  (_, res) => {
+    res.status(200).json({success: true});
+  }
+);
 
 router.get('/logout', (req, res) => {
   req.logout();
