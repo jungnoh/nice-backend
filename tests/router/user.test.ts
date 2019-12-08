@@ -46,13 +46,34 @@ describe('Authorization', () => {
       expect(resp.body.success).toBe(true);
     });
     it('should 409 if email or username exists', async () => {
-      const resp = await request(app).post('/user/signup').send({
-        email: `${memberID}@test.com`,
+      const unameTest = await request(app).post('/user/signup').send({
+        email: `a@test.com`,
         password: 'asdf',
         username: memberID
       });
-      expect(resp.status).toEqual(409);
-      expect(resp.body.success).toBe(false);
+      expect(unameTest.status).toEqual(409);
+      expect(unameTest.body.success).toBe(false);
+      const emailTest = await request(app).post('/user/signup').send({
+        email: `${memberID}@test.com`,
+        password: 'asdf',
+        username: 'fooooooo'
+      });
+      expect(emailTest.status).toEqual(409);
+      expect(emailTest.body.success).toBe(false);
+    });
+    it('should 403 if logged in already', async () => {
+      const agent = request.agent(app);
+      await agent.post('/user/login').send({
+        password: 'asdf',
+        username: memberID
+      });
+      const resp = await agent.post('/user/signup').send({
+        email: `bar@test.com`,
+        password: 'asdf',
+        username: 'fooooooo'
+      });
+      expect(resp.status).toEqual(403);
+      expect(resp.body.success).toEqual(false);
     });
   });
   describe('GET /user/me', () => {
