@@ -82,7 +82,7 @@ export async function findOne(options: Partial<User>): Promise<User | undefined>
  * @param options Search options to query by
  * @returns User object if found, undefined otherwise
  */
-export async function findOneProfile(options: Partial<User>): Promise<User | undefined> {
+export async function findOneProfile(options: Partial<User>): Promise<UserProfile | undefined> {
   try {
     return await UserModel
       .findOne(options)
