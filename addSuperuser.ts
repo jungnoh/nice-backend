@@ -1,21 +1,37 @@
-  // tslint:disable: no-console
-import {createConnection, getManager} from 'typeorm';
-import User from './src/models/user';
+// tslint:disable: no-console
+import mongoose from 'mongoose';
+import nconf from 'nconf';
+import {UserModel} from './src/models/user';
 import {hash} from './src/utils/password';
 
 const username = 'admin';
 const password = 'asdf';
 const email = 'asdf@asdf.com';
 
-console.log('[-] Connecting');
-createConnection().then(async (conn) => {
-  console.log('[+] Synchronized');
-  const user = new User();
-  user.email = email;
-  user.password = await hash(password);
-  user.username = username;
-  user.isSuperuser = true;
-  console.log('[-] Saving');
-  await getManager().save(user);
-  console.log('[+] Add complete');
-});
+const settingsPath = `${__dirname}/config/config.dev.json`;
+nconf.file(settingsPath);
+if (!nconf.get('mongodb')) {
+  throw new Error('MongoDB connection config is not set');
+}
+const mongoConfig = nconf.get('mongodb');
+const mongooseConfig: mongoose.ConnectionOptions = {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+};
+if (mongoConfig.user !== undefined) {
+  mongooseConfig.user = mongoConfig.user;
+  mongooseConfig.pass = mongoConfig.pass;
+}
+mongoose.connect(mongoConfig.url, mongooseConfig);
+
+const task = async () => {
+  await new UserModel({
+    email,
+    isSuperuser: true,
+    password: await hash(password),
+    username
+  }).save();
+};
+task()
+.then(() => console.log('Complete'))
+.catch((err) => console.log(err));

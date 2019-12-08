@@ -1,21 +1,38 @@
-import {getManager} from 'typeorm';
-import User from '../models/user';
+import {ObjectId} from 'bson';
+import {User, UserModel, UserProfile} from '../models/user';
 import * as Password from '../utils/password';
+
+// Common error literals
+export const EMAIL_EXISTS = 'EEMAIL_EXISTS';
+export const USERNAME_EXISTS = 'EUSERNAME_EXISTS';
 
 /**
  * @description Create a user, without profile info
  * @param email Email address
  * @param username Username
  * @param password Plaintext password
+ * @throws `EMAIL_EXISTS`, `USERNAME_EXISTS`
  */
 export async function createUser(email: string, username: string, password: string): Promise<User> {
   try {
-    const user = new User();
-    user.email = email;
-    user.username = username;
-    user.password = await Password.hash(password);
-    await getManager().save(user);
-    return user;
+    const existingUsers = await UserModel.find({
+      $or: [
+        {email},
+        {username}
+      ]
+    });
+    if (existingUsers.length > 0) {
+      if (existingUsers[0].email === email) {
+        throw EMAIL_EXISTS;
+      } else {
+        throw USERNAME_EXISTS;
+      }
+    }
+    return await UserModel.create({
+      email,
+      password: await Password.hash(password),
+      username
+    });
   } catch (err) {
     throw err;
   }
@@ -29,8 +46,8 @@ export async function createUser(email: string, username: string, password: stri
  */
 export async function authenticate(username: string, password: string): Promise<User | undefined> {
   try {
-    const user = await getManager().findOne(User, {username});
-    if (user === undefined) {
+    const user = await UserModel.findOne({username});
+    if (user === null) {
       return undefined;
     } else {
       const valid = await Password.verify(user.password, password);
@@ -45,10 +62,55 @@ export async function authenticate(username: string, password: string): Promise<
   }
 }
 
-export async function getByUsername(username: string): Promise<User | undefined> {
+/**
+ * @description Find user by username.
+ * This result should not be exposed as an API result, as it includes sensitive information
+ * (eg. password hashes)
+ * @param options Search options to query by
+ * @returns User object if found, undefined otherwise
+ */
+export async function findOne(options: Partial<User>): Promise<User | undefined> {
   try {
-    return await getManager().findOne(User, {username});
+    return await UserModel.findOne(options) ?? undefined;
   } catch (err) {
     throw err;
   }
+}
+
+/**
+ * @description Find user, and retrieve profile. This removes sensitive information unlike `findOne`.
+ * @param options Search options to query by
+ * @returns User object if found, undefined otherwise
+ */
+export async function findOneProfile(options: Partial<User>): Promise<UserProfile | undefined> {
+  try {
+    return await UserModel
+      .findOne(options)
+      .select('-password')
+      ?? undefined;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function update(id: ObjectId, data: Partial<User>): Promise<User | undefined> {
+  try {
+    return await UserModel.findByIdAndUpdate(id, data) ?? undefined;
+  } catch (err) {
+    throw err;
+  }
+}
+
+/**
+ * @description Convert('sanitize') a User object to a UserProfile,
+ * removing sensitive information contained in a User object. (eg. password hashes)
+ * @param user User object to convert
+ */
+export function sanitizeUserObj(user: User): UserProfile {
+  // Note: do NOT use Object.assign
+  return {
+    email: user.email,
+    isSuperuser: user.isSuperuser,
+    username: user.username
+  };
 }

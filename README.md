@@ -3,7 +3,7 @@
 Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 모두 담은 프로젝트 뼈대입니다.
 
 # What's inside
-- DB usage with TypeORM (configured for MySQL, can be changed)
+- Mongodb with mongoose
 - Basic passport.js implementation (`passport-local`)
 - HTTPS support
 - TSLint with pre-commit hooks
@@ -11,23 +11,19 @@ Node.JS 백엔드 프로젝트의 시작부터 배포까지 필요한 요소를 
 - (todo) GraphQL querying
 
 # 처음 시작하기
-1. DB 접속정보 추가
-
-`ormconfig.json`에 아래 형태로 DB 접속정보를 저장합니다.
+1. config 설정
+다음과 같은 형태로 DB 접속정보를 설정하세요.
+Development, production config는 각각 `config/config.dev.json`, `config/config.prod.json`에 저장됩니다.
 ```json
 {
-  "type": "mysql",
-  "host": "localhost",
-  "port": 3306,
-  "username": "test",
-  "password": "test",
-  "database": "test",
-  "entities": [
-    "./src/models/*.ts"
-  ]
+  "mongodb": {
+    "url": "mongodb://localhost:27017/dev",
+    "user": "admin",
+    "pass": "123"
+  }
 }
 ```
-`entities`는 반드시 포함하십시오. 자세한 설정은 [TypeORM docs](https://typeorm.io/#/using-ormconfig)에서 확인하세요.
+세션 키 (`sessionSecret`)는 설정하지 마십시오! 적절한 키 길이로 런타임에 설정됩니다.
 
 # Notes
 
@@ -63,7 +59,7 @@ Request 타입에 이를 반영하기 위해 `src/express.d.ts`에서 타입 정
 
 # 주요 라이브러리
 프로젝트를 시작하기 전 이용방법을 숙지하시길 바립니다.
-- [TypeORM](https://typeorm.io/#/) ⭐️
+- [Mongoose](https://mongoosejs.com/) ⭐️
 - [PassportJS](http://www.passportjs.org/) ⭐️
 - [express-validator](https://express-validator.github.io/docs/): 요청 유효성 확인에 사용
 

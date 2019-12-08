@@ -1,28 +1,67 @@
-import { TypeormStore } from 'connect-typeorm/out';
+import MongoStore from 'connect-mongo';
 import express from 'express';
 import expressSession from 'express-session';
 import helmet from 'helmet';
+import mongoose from 'mongoose';
+import nconf from 'nconf';
 import passport from 'passport';
-import {createConnection} from 'typeorm';
-import Session from './models/session';
 import router from './routes';
+import {createKey} from './utils/crypto';
 
 import * as PassportStrategy from './utils/passport';
 
-export default async function createApp(isDev: boolean = false) {
-  const dbConn = await createConnection();
-  const app = express();
+interface MongoSettings {
+    url: string;
+    user?: string;
+    pass?: string;
+}
 
-  const sessionRepo = dbConn.getRepository(Session);
+// TODO: Find a better name
+async function setup(isDev: boolean) {
+  const settingsPath = `${__dirname}/../config/config.${isDev ? 'dev' : 'prod'}.json`;
+  nconf.file(settingsPath);
+  try {
+    if (!nconf.get('sessionSecret')) {
+      nconf.set('sessionSecret', await createKey());
+    }
+    if (!nconf.get('mongodb')) {
+      throw new Error('MongoDB connection config is not set');
+    }
+    const mongoConfig = nconf.get('mongodb') as MongoSettings;
+    const mongooseConfig: mongoose.ConnectionOptions = {
+      useCreateIndex: true,
+      useFindAndModify: true,
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    };
+    if (mongoConfig.user !== undefined) {
+      mongooseConfig.user = mongoConfig.user;
+      mongooseConfig.pass = mongoConfig.pass;
+    }
+    mongoose.connect(mongoConfig.url, mongooseConfig);
+    // Save config
+    nconf.save(() => null);
+  } catch (err) {
+    throw err;
+  }
+}
+
+export default async function createApp(isDev: boolean = false) {
+  // Set configs
+  await setup(isDev);
+  const app = express();
+  // Express session
   app.use(expressSession({
+    cookie: {
+      httpOnly: false, // Client-side XHR will be used
+      maxAge: 24 * 60 * 60 * 1000 // 1 day
+    },
     resave: false,
     saveUninitialized: false,
-    secret: 'asdf', // TODO: Use a secure key
-    store: new TypeormStore({
-      cleanupLimit: 2,
-      limitSubquery: false,
-      ttl: 86400
-    }).connect(sessionRepo)
+    secret: nconf.get('sessionSecret'),
+    store: new (MongoStore(expressSession))({
+      mongooseConnection: mongoose.connection
+    })
   }));
 
   app.use(helmet());
@@ -35,6 +74,10 @@ export default async function createApp(isDev: boolean = false) {
   passport.use(PassportStrategy.localStrategy);
   passport.serializeUser(PassportStrategy.serialize);
   passport.deserializeUser(PassportStrategy.deserialize);
+  app.use((req, _, next) => {
+    req.currentUser = (req.user as any);
+    next();
+  });
   // Routes
   app.use(router);
 
