@@ -13,7 +13,12 @@ export const USERNAME_EXISTS = 'EUSERNAME_EXISTS';
  * @param password Plaintext password
  * @throws `EMAIL_EXISTS`, `USERNAME_EXISTS`
  */
-export async function createUser(email: string, username: string, password: string): Promise<User> {
+export async function createUser(
+  email: string,
+  username: string,
+  password: string,
+  isSuperuser: boolean = false
+): Promise<User> {
   try {
     const existingUsers = await UserModel.find({
       $or: [
@@ -30,6 +35,7 @@ export async function createUser(email: string, username: string, password: stri
     }
     return await UserModel.create({
       email,
+      isSuperuser,
       password: await Password.hash(password),
       username
     });
