@@ -15,7 +15,7 @@ export const localStrategy = new LocalStrategy({
   passReqToCallback: true,
   passwordField: 'password',
   usernameField: 'username'
-}, async (req, username, password, done) => {
+}, async (_, username, password, done) => {
   try {
     const user = await UserService.authenticate(username, password);
     if (user === undefined) {

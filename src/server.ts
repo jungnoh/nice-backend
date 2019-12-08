@@ -74,7 +74,7 @@ export default async function createApp(isDev: boolean = false) {
   passport.use(PassportStrategy.localStrategy);
   passport.serializeUser(PassportStrategy.serialize);
   passport.deserializeUser(PassportStrategy.deserialize);
-  app.use((req, res, next) => {
+  app.use((req, _, next) => {
     req.currentUser = (req.user as any);
     next();
   });
