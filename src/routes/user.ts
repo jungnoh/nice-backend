@@ -1,7 +1,5 @@
 import {Router} from 'express';
 import passport from 'passport';
-// import {check} from 'express-validator';
-import * as UserController from '../controllers/user';
 
 const router = Router();
 
