@@ -22,6 +22,16 @@ adminRouter.put('/board/rename', [
   check('newName').exists().isString()
 ], rejectValFail, BoardController.renameBoard);
 
+adminRouter.get('/board/perm', [
+  check('key').exists().matches(boardKeyRegex)
+], rejectValFail, BoardController.getBoardPerm);
+
+// adminRouter.put('/board/perm', [
+//   check('key').exists().matches(boardKeyRegex),
+//   check('action').exists().isIn(['comment', 'list', 'read', 'write']),
+//   check('perm').exists().isIn(['anyone', 'member', 'admin'])
+// ], rejectValFail);
+
 userRouter.get('/:key/list', [
   check('key').exists().matches(boardKeyRegex),
   check('page').isInt({min: 1}).toInt()

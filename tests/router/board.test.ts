@@ -72,4 +72,64 @@ describe('Board Administration', () => {
       expect(resp.body.success).toEqual(false);
     });
   });
+  describe('Rename board', () => {
+    it('should 403 when accessed by non-superuser', async () => {
+      const resp = await userAgent.put('/board/admin/board/rename').send({
+        key: boardKey,
+        newName: 'testboard'
+      });
+      expect(resp.status).toEqual(403);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should 400 on missing params', async () => {
+      const resp = await adminAgent.put('/board/admin/board/rename').send({
+        newName: 'testboard'
+      });
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should 400 when key does not exist', async () => {
+      const resp = await adminAgent.put('/board/admin/board/rename').send({
+        key: 'foo',
+        newName: 'testboard'
+      });
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should rename properly', async () => {
+      const resp = await adminAgent.put('/board/admin/board/rename').send({
+        key: boardKey,
+        newName: 'testboard'
+      });
+      expect(resp.status).toEqual(200);
+      expect(resp.body.success).toEqual(true);
+    });
+  });
+  describe('Retrieve board perms', () => {
+    it('should 403 when accessed by non-superuser', async () => {
+      const resp = await userAgent.get(`/board/admin/board/perm?key=${boardKey}`);
+      expect(resp.status).toEqual(403);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should 400 when key not supplied', async () => {
+      const resp = await adminAgent.get(`/board/admin/board/perm`);
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should 400 when key is invalid', async () => {
+      const resp = await adminAgent.get(`/board/admin/board/perm?key=foofoo`);
+      expect(resp.status).toEqual(400);
+      expect(resp.body.success).toEqual(false);
+    });
+    it('should retrieve perm correctly', async () => {
+      const resp = await adminAgent.get(`/board/admin/board/perm?key=${boardKey}`);
+      expect(resp.status).toEqual(200);
+      expect(resp.body.success).toEqual(true);
+      expect(resp.body).toHaveProperty('perm');
+      expect(resp.body.perm.comment).toEqual('member');
+      expect(resp.body.perm.list).toEqual('member');
+      expect(resp.body.perm.write).toEqual('member');
+      expect(resp.body.perm.read).toEqual('member');
+    });
+  });
 });

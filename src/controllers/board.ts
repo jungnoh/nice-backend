@@ -163,3 +163,30 @@ export async function getPost(req: Request, res: Response) {
     }
   }
 }
+
+/**
+ * @description Controller for `GET /admin/board/perm`
+ */
+export async function getBoardPerm(req: Request, res: Response) {
+  try {
+    const perm = await BoardService.getBoardPermissions(req.query.key);
+    res.status(200).json({
+      perm,
+      success: true
+    });
+  } catch (err) {
+    if (err === BoardService.BOARD_NEXIST) {
+      res.status(400).json({
+        error: BoardService.BOARD_NEXIST,
+        success: false
+      });
+    } else {
+      // TODO: Log error
+      res.status(500).json({success: false});
+    }
+  }
+}
+
+/**
+ * @description Controller for `PUT /admin/board/perm`
+ */
